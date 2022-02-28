@@ -1,7 +1,7 @@
 function buttonClick() {
     let x = document.getElementsByClassName('weather');
-    while(x[0]){
-        x[0].parentNode.removeChild(x[0]);
+    while (x[0]) {
+        x[0].parentNode!.removeChild(x[0]);
     }
     fetch('/random/weather')
         .then(response => response.json())
@@ -19,7 +19,8 @@ function buttonClick() {
             newDiv.appendChild(p2);
             let btn = document.getElementById('btn');
             document.body.appendChild(newDiv);
-            btn.innerText = "Get another random Weather";
+            btn!.innerText = "Get another random Weather";
         });
 }
+
 buttonClick();
