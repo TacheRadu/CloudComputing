@@ -1,7 +1,7 @@
 const http = require('http');
 const fs = require('fs');
-const { StatusCodes } = require('http-status-codes');
-const { getDate, getLocation, getWeather } = require('./util/api-methods')
+const {StatusCodes} = require('http-status-codes');
+const {getDate, getLocation, getWeather} = require('./util/api-methods')
 
 
 MIMETypes = {
@@ -29,6 +29,7 @@ let server = http.createServer(async (req, res) => {
             "Content-Type": "application/json"
         });
         res.end(JSON.stringify(weather));
+        console.log(res)
     } else if (pathName === '/') {
         res.writeHead(StatusCodes.OK, {
             "Content-Type": "text/html"
@@ -59,7 +60,7 @@ let server = http.createServer(async (req, res) => {
                 }
             });
         }
-        ;
+
     }
 });
 

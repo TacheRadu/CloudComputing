@@ -26,14 +26,20 @@ let getDate = async () => {
 let getLocation = async () => {
     let num = (await getRandomInts(1, 0, 23847))[0];
     return (await axios.get(
-        `http://geodb-free-service.wirefreethought.com/v1/geo/cities?limit=1&offset=${num}&hateoasMode=off`
+        encodeURI(`http://geodb-free-service.wirefreethought.com/v1/geo/cities?limit=1&offset=${num}&hateoasMode=off`)
     )).data.data[0].city;
 }
 
 let getWeather = async (date, location) => {
-    return (await axios.get(
-        `http://api.weatherapi.com/v1/history.json?key=${keys.weatherApiKey}&q=${location}&dt=${date}`
-    )).data
+    try {
+        let data = (await axios.get(
+            encodeURI(`http://api.weatherapi.com/v1/history.json?key=${keys.weatherApiKey}&q=${location}&dt=${date}`)
+        )).data;
+        return data;
+    } catch {
+        console.log("Retrying...")
+        return getWeather(date, await getLocation());
+    }
 }
 
 module.exports = {

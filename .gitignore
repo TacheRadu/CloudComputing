@@ -1,3 +1,4 @@
 .idea
 *node_modules
-Homework_1/util/config.js
+Homework_1/src/util/config.ts
+Homework_1/built
