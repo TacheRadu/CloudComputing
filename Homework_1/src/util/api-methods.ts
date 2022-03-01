@@ -16,7 +16,7 @@ export async function selectMinMaxAvg(){
                 [sequelize.fn('avg', sequelize.col('latency')), 'avgLatency'],
             ],
             where: {
-                requestType: x[i]t rm 
+                requestType: x[i]
             }
             // @ts-ignore
         }))[0].dataValues);
