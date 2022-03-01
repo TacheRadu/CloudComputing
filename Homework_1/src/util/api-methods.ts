@@ -25,19 +25,20 @@ export async function selectMinMaxAvg(){
 }
 
 export async function getRandomInts(count: number, min: number, max: number) {
-    let start = Date.now();
-    let res = await axios.post("https://api.random.org/json-rpc/4/invoke", {
-        "jsonrpc": "2.0",
-        "method": "generateIntegers",
-        "params": {
-            "apiKey": config.randomOrgKey,
-            "n": count,
-            "min": min,
-            "max": max,
-            "replacement": true
-        },
-        "id": 42
-    });
+    try {
+        let start = Date.now();
+        let res = await axios.post("https://api.random.org/json-rpc/4/invoke", {
+            "jsonrpc": "2.0",
+            "method": "generateIntegers",
+            "params": {
+                "apiKey": config.randomOrgKey,
+                "n": count,
+                "min": min,
+                "max": max,
+                "replacement": true
+            },
+            "id": 42
+        });
         Log.create({
             latency: Date.now() - start,
             request: "https://api.random.org/json-rpc/4/invoke",
@@ -47,7 +48,10 @@ export async function getRandomInts(count: number, min: number, max: number) {
             log.save();
         })
 
-    return res.data.result.random.data;
+        return res.data.result.random.data;
+    } catch {
+        console.error("No random int for you");
+    }
 }
 
 export async function getDate() {
@@ -58,21 +62,25 @@ export async function getDate() {
 }
 
 export async function getLocation() {
-    let num = (await getRandomInts(1, 0, 23847))[0];
-    let start = Date.now();
-    let res = await axios.get(
-        encodeURI(`http://geodb-free-service.wirefreethought.com/v1/geo/cities?limit=1&offset=${num}&hateoasMode=off`)
-    );
-    Log.create({
-        latency: Date.now() - start,
-        request: `http://geodb-free-service.wirefreethought.com/v1/geo/cities?limit=1&offset=${num}&hateoasMode=off`,
-        response: res.statusText,
-        requestType: "location",
-    } as LogAttributes).then((log) => {
+    try {
+        let num = (await getRandomInts(1, 0, 23847))[0];
+        let start = Date.now();
+        let res = await axios.get(
+            encodeURI(`http://geodb-free-service.wirefreethought.com/v1/geo/cities?limit=1&offset=${num}&hateoasMode=off`)
+        );
+        Log.create({
+            latency: Date.now() - start,
+            request: `http://geodb-free-service.wirefreethought.com/v1/geo/cities?limit=1&offset=${num}&hateoasMode=off`,
+            response: res.statusText,
+            requestType: "location",
+        } as LogAttributes).then((log) => {
 
-        log.save();
-    })
-    return res.data.data[0].city;
+            log.save();
+        })
+        return res.data.data[0].city;
+    } catch {
+        console.error("No location for you");
+    }
 }
 
 export async function getWeather(date: Date, location: string): Promise<object> {
