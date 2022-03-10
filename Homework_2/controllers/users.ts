@@ -58,56 +58,6 @@ export async function getUser(req: IncomingMessage, res: ServerResponse) {
     }));
 }
 
-export async function getUserAnimeList(req: IncomingMessage, res: ServerResponse) {
-    let user = await User.findOne(req.url?.split("/")[2]);
-    if (user) {
-        let animeList = await user.animeList;
-        res.writeHead(StatusCodes.OK, {
-            "Content-Type": "application/json"
-        });
-        res.end(JSON.stringify(animeList));
-        return;
-    }
-    res.writeHead(StatusCodes.NOT_FOUND, {
-        "Content-Type": "application/json"
-    });
-    res.end(JSON.stringify({
-        message: "Invalid user id."
-    }));
-}
-
-export async function getUserAnimeListEntry(req: IncomingMessage, res: ServerResponse) {
-    let user = await User.findOne(req.url?.split("/")[2]);
-    if (user) {
-        let animeEntry = await AnimeEntry.findOne({
-            where: {
-                user,
-                id: req.url?.split("/")[4]
-            }
-        });
-        if (animeEntry) {
-            res.writeHead(StatusCodes.OK, {
-                "Content-Type": "application/json"
-            });
-            res.end(JSON.stringify(animeEntry));
-            return;
-        }
-        res.writeHead(StatusCodes.NOT_FOUND, {
-            "Content-Type": "application/json"
-        });
-        res.end(JSON.stringify({
-            message: "Invalid anime entry id."
-        }));
-        return;
-    }
-    res.writeHead(StatusCodes.NOT_FOUND, {
-        "Content-Type": "application/json"
-    });
-    res.end(JSON.stringify({
-        message: "Invalid user id."
-    }));
-}
-
 export async function updateUser(req: IncomingMessage, res: ServerResponse) {
     let body = await getRequestBody(req);
     let user = await User.findOne(req.url?.split("/")[2]);
@@ -130,36 +80,24 @@ export async function updateUser(req: IncomingMessage, res: ServerResponse) {
     }));
 }
 
-export async function updateUserAnimeListEntry(req: IncomingMessage, res: ServerResponse) {
-    let body = await getRequestBody(req);
+export async function deleteUser(req: IncomingMessage, res: ServerResponse) {
     let user = await User.findOne(req.url?.split("/")[2]);
     if (user) {
-        let entry = await AnimeEntry.findOne({
-            where: {
-                user,
-                id: req.url?.split("/")[4]
-            }
-        });
-        if (entry) {
-            if (body.episodesWatched) {
-                entry.episodesWatched = body.episodesWatched;
-            }
-            if (body.status) {
-                entry.status = body.status;
-            }
-            await entry.save();
-            res.writeHead(StatusCodes.OK, {
+        let entries = await user.animeList;
+        if (entries.length != 0) {
+            res.writeHead(StatusCodes.METHOD_NOT_ALLOWED, {
                 "Content-Type": "application/json"
             });
-            res.end(JSON.stringify(entry));
+            res.end(JSON.stringify({
+                message: "User cannot be deleted while his list is not empty."
+            }));
             return;
         }
-        res.writeHead(StatusCodes.NOT_FOUND, {
+        await user.remove();
+        res.writeHead(StatusCodes.OK, {
             "Content-Type": "application/json"
         });
-        res.end(JSON.stringify({
-            message: "Invalid anime entry id."
-        }));
+        res.end(JSON.stringify(user));
         return;
     }
     res.writeHead(StatusCodes.NOT_FOUND, {

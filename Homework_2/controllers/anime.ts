@@ -76,3 +76,29 @@ export async function updateAnime(req: IncomingMessage, res: ServerResponse) {
         message: "Invalid anime id."
     }));
 }
+
+export async function deleteAnime(req: IncomingMessage, res: ServerResponse) {
+    let anime = await Anime.findOne(req.url?.split("/")[2]);
+    if (anime) {
+        let entries = await anime.entries;
+        if (entries.length !== 0) {
+            res.writeHead(StatusCodes.METHOD_NOT_ALLOWED, {
+                "Content-Type": "application/json"
+            });
+            res.end(JSON.stringify({
+                message: "Anime cannot be deleted while it is part of a list."
+            }));
+            return;
+        }
+        await anime.remove();
+        res.writeHead(StatusCodes.OK, {});
+        res.end(JSON.stringify(anime));
+        return;
+    }
+    res.writeHead(StatusCodes.NOT_FOUND, {
+        "Content-Type": "application/json"
+    });
+    res.end(JSON.stringify({
+        message: "Invalid anime id."
+    }));
+}

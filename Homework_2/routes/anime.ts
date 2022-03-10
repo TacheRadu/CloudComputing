@@ -1,5 +1,5 @@
 import {IncomingMessage, ServerResponse} from "http";
-import {createAnime, getAllAnime, getAnime, updateAnime} from "../controllers/anime";
+import {createAnime, deleteAnime, getAllAnime, getAnime, updateAnime} from "../controllers/anime";
 import {StatusCodes} from "http-status-codes";
 
 export async function animeRouter(req: IncomingMessage, res: ServerResponse) {
@@ -18,9 +18,14 @@ export async function animeRouter(req: IncomingMessage, res: ServerResponse) {
             getAnime(req, res);
             return;
         }
-    } else if(req.method == "PUT"){
-        if(pathEntries.length == 3){
+    } else if (req.method == "PUT") {
+        if (pathEntries.length == 3) {
             updateAnime(req, res);
+            return;
+        }
+    } else if (req.method == "DELETE") {
+        if (pathEntries.length == 3) {
+            deleteAnime(req, res);
             return;
         }
     }
