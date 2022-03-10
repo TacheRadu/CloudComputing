@@ -30,3 +30,28 @@ export async function createAnime(req: IncomingMessage, res: ServerResponse){
         message: "Parameters required were not provided."
     }));
 }
+
+export async function getAllAnime(req: IncomingMessage, res: ServerResponse){
+    let anime = await Anime.find();
+    res.writeHead(StatusCodes.OK, {
+        "Content-Type": "application/json"
+    });
+    res.end(JSON.stringify(anime));
+}
+
+export async function getAnime(req: IncomingMessage, res: ServerResponse){
+    let anime = await Anime.findOne(req.url?.split("/")[2]);
+    if(anime){
+        res.writeHead(StatusCodes.OK, {
+            "Content-Type": "application/json"
+        });
+        res.end(JSON.stringify(anime));
+        return;
+    }
+    res.writeHead(StatusCodes.NOT_FOUND, {
+        "Content-Type": "application/json"
+    });
+    res.end(JSON.stringify({
+        message: "Invalid anime id."
+    }));
+}
