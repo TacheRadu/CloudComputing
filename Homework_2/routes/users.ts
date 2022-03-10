@@ -1,6 +1,14 @@
 import {IncomingMessage, ServerResponse} from "http"
 import {StatusCodes} from "http-status-codes";
-import {createUser, getAllUsers, getUser, getUserAnimeList, getUserAnimeListEntry} from "../controllers/users";
+import {
+    createUser,
+    getAllUsers,
+    getUser,
+    getUserAnimeList,
+    getUserAnimeListEntry,
+    updateUser,
+    updateUserAnimeListEntry
+} from "../controllers/users";
 import {addAnimeToUserList} from "../controllers/anime-entry";
 
 export async function usersRouter(req: IncomingMessage, res: ServerResponse) {
@@ -12,6 +20,7 @@ export async function usersRouter(req: IncomingMessage, res: ServerResponse) {
             return;
         } else if (pathEntries.length == 4) {
             addAnimeToUserList(req, res);
+            return;
         }
     } else if (req.method == "GET") {
         if (pathEntries.length == 2) {
@@ -25,6 +34,14 @@ export async function usersRouter(req: IncomingMessage, res: ServerResponse) {
             return;
         } else if (pathEntries.length == 5 && pathEntries[3] == "anime") {
             getUserAnimeListEntry(req, res);
+            return;
+        }
+    } else if (req.method == "PUT") {
+        if (pathEntries.length == 3) {
+            updateUser(req, res);
+            return;
+        } else if (pathEntries.length == 5 && pathEntries[3] == "anime") {
+            updateUserAnimeListEntry(req, res);
             return;
         }
     }

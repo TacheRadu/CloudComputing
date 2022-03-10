@@ -3,15 +3,14 @@ import {getRequestBody} from "../util/request-data";
 import {StatusCodes} from "http-status-codes";
 import {Anime} from "../entity/anime.dto";
 
-export async function createAnime(req: IncomingMessage, res: ServerResponse){
+export async function createAnime(req: IncomingMessage, res: ServerResponse) {
     let body = await getRequestBody(req);
-    if(body.name){
+    if (body.name) {
         let newAnime = new Anime();
         newAnime.name = body.name;
         await newAnime.save();
-        if(newAnime){
-            res.writeHead(StatusCodes.CREATED, {
-            });
+        if (newAnime) {
+            res.writeHead(StatusCodes.CREATED, {});
             res.end(JSON.stringify(newAnime));
             return;
         }
@@ -31,7 +30,7 @@ export async function createAnime(req: IncomingMessage, res: ServerResponse){
     }));
 }
 
-export async function getAllAnime(req: IncomingMessage, res: ServerResponse){
+export async function getAllAnime(req: IncomingMessage, res: ServerResponse) {
     let anime = await Anime.find();
     res.writeHead(StatusCodes.OK, {
         "Content-Type": "application/json"
@@ -39,9 +38,31 @@ export async function getAllAnime(req: IncomingMessage, res: ServerResponse){
     res.end(JSON.stringify(anime));
 }
 
-export async function getAnime(req: IncomingMessage, res: ServerResponse){
+export async function getAnime(req: IncomingMessage, res: ServerResponse) {
     let anime = await Anime.findOne(req.url?.split("/")[2]);
-    if(anime){
+    if (anime) {
+        res.writeHead(StatusCodes.OK, {
+            "Content-Type": "application/json"
+        });
+        res.end(JSON.stringify(anime));
+        return;
+    }
+    res.writeHead(StatusCodes.NOT_FOUND, {
+        "Content-Type": "application/json"
+    });
+    res.end(JSON.stringify({
+        message: "Invalid anime id."
+    }));
+}
+
+export async function updateAnime(req: IncomingMessage, res: ServerResponse) {
+    let body = await getRequestBody(req);
+    let anime = await Anime.findOne(req.url?.split("/")[2]);
+    if (anime) {
+        if (body.name) {
+            anime.name = body.name;
+        }
+        await anime.save();
         res.writeHead(StatusCodes.OK, {
             "Content-Type": "application/json"
         });

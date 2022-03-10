@@ -6,7 +6,7 @@ import {animeRouter} from "./anime";
 export function route(req: http.IncomingMessage, res: http.ServerResponse) {
     if (req.url?.startsWith("/users")) {
         usersRouter(req, res);
-    } else if(req.url?.startsWith("/anime")){
+    } else if (req.url?.startsWith("/anime")) {
         animeRouter(req, res);
     } else if (req.url == "/" && req.method == "GET") {
         res.writeHead(StatusCodes.OK, {

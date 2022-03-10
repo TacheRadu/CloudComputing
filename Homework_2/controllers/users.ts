@@ -92,7 +92,7 @@ export async function getUserAnimeListEntry(req: IncomingMessage, res: ServerRes
             res.end(JSON.stringify(animeEntry));
             return;
         }
-        res.writeHead(StatusCodes.BAD_REQUEST, {
+        res.writeHead(StatusCodes.NOT_FOUND, {
             "Content-Type": "application/json"
         });
         res.end(JSON.stringify({
@@ -100,7 +100,69 @@ export async function getUserAnimeListEntry(req: IncomingMessage, res: ServerRes
         }));
         return;
     }
-    res.writeHead(StatusCodes.BAD_REQUEST, {
+    res.writeHead(StatusCodes.NOT_FOUND, {
+        "Content-Type": "application/json"
+    });
+    res.end(JSON.stringify({
+        message: "Invalid user id."
+    }));
+}
+
+export async function updateUser(req: IncomingMessage, res: ServerResponse) {
+    let body = await getRequestBody(req);
+    let user = await User.findOne(req.url?.split("/")[2]);
+    if (user) {
+        if (body.name) {
+            user.name = body.name;
+        }
+        await user.save();
+        res.writeHead(StatusCodes.OK, {
+            "Content-Type": "application/json"
+        });
+        res.end(JSON.stringify(user));
+        return;
+    }
+    res.writeHead(StatusCodes.NOT_FOUND, {
+        "Content-Type": "application/json"
+    });
+    res.end(JSON.stringify({
+        message: "Invalid user id."
+    }));
+}
+
+export async function updateUserAnimeListEntry(req: IncomingMessage, res: ServerResponse) {
+    let body = await getRequestBody(req);
+    let user = await User.findOne(req.url?.split("/")[2]);
+    if (user) {
+        let entry = await AnimeEntry.findOne({
+            where: {
+                user,
+                id: req.url?.split("/")[4]
+            }
+        });
+        if (entry) {
+            if (body.episodesWatched) {
+                entry.episodesWatched = body.episodesWatched;
+            }
+            if (body.status) {
+                entry.status = body.status;
+            }
+            await entry.save();
+            res.writeHead(StatusCodes.OK, {
+                "Content-Type": "application/json"
+            });
+            res.end(JSON.stringify(entry));
+            return;
+        }
+        res.writeHead(StatusCodes.NOT_FOUND, {
+            "Content-Type": "application/json"
+        });
+        res.end(JSON.stringify({
+            message: "Invalid anime entry id."
+        }));
+        return;
+    }
+    res.writeHead(StatusCodes.NOT_FOUND, {
         "Content-Type": "application/json"
     });
     res.end(JSON.stringify({
