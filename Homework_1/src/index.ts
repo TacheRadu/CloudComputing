@@ -24,7 +24,7 @@ const MIMETypes = {
 
 dbConfig
     .sync()
-    .then(() => console.log("connected to db"))
+    .then(() => console.log("connected to entity"))
     .catch(() => {
         throw "error";
     });
