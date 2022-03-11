@@ -1,5 +1,5 @@
 import {IncomingMessage, ServerResponse} from "http";
-import {createAnime, deleteAnime, getAllAnime, getAnime, updateAnime} from "../controllers/anime";
+import {createAnime, createSpecificAnime, deleteAnime, getAllAnime, getAnime, updateAnime} from "../controllers/anime";
 import {StatusCodes} from "http-status-codes";
 
 export async function animeRouter(req: IncomingMessage, res: ServerResponse) {
@@ -8,6 +8,9 @@ export async function animeRouter(req: IncomingMessage, res: ServerResponse) {
     if (req.method == "POST") {
         if (pathEntries.length == 2) {
             createAnime(req, res);
+            return;
+        } else if (pathEntries.length == 3) {
+            createSpecificAnime(req, res);
             return;
         }
     } else if (req.method == "GET") {

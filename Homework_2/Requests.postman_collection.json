@@ -20,13 +20,14 @@
           }
         },
         "url": {
-          "raw": "localhost:3212/users",
+          "raw": "localhost:3212/users/10",
           "host": [
             "localhost"
           ],
           "port": "3212",
           "path": [
-            "users"
+            "users",
+            "10"
           ]
         }
       },
@@ -66,7 +67,7 @@
         "header": [],
         "body": {
           "mode": "raw",
-          "raw": "{\r\n    \"id\": 1\r\n}",
+          "raw": "{\r\n    \"id\": 1,\r\n    \"status\": \"Plan to watch\",\r\n    \"episodesWatched\": 0\r\n}",
           "options": {
             "raw": {
               "language": "json"
@@ -74,15 +75,16 @@
           }
         },
         "url": {
-          "raw": "localhost:3212/users/1/anime",
+          "raw": "localhost:3212/users/10/anime/",
           "host": [
             "localhost"
           ],
           "port": "3212",
           "path": [
             "users",
-            "1",
-            "anime"
+            "10",
+            "anime",
+            ""
           ]
         }
       },
