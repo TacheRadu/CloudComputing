@@ -9,6 +9,7 @@ import {
     getUserAnimeListEntry,
     updateUserAnimeListEntry
 } from "../controllers/anime-entry";
+import {methodNotAllowed} from "../util/basic-responses";
 
 export async function usersRouter(req: IncomingMessage, res: ServerResponse) {
     let pathEntries = req.url?.split("/") || [];
@@ -42,16 +43,28 @@ export async function usersRouter(req: IncomingMessage, res: ServerResponse) {
             return;
         }
     } else if (req.method == "PUT") {
-        if (pathEntries.length == 3) {
+        if (pathEntries.length == 2) {
+            methodNotAllowed(req, res);
+            return;
+        } else if (pathEntries.length == 3) {
             updateUser(req, res);
+            return;
+        } else if (pathEntries.length == 4 && pathEntries[3] == "anime") {
+            methodNotAllowed(req, res);
             return;
         } else if (pathEntries.length == 5 && pathEntries[3] == "anime") {
             updateUserAnimeListEntry(req, res);
             return;
         }
     } else if (req.method == "DELETE") {
-        if (pathEntries.length == 3) {
+        if (pathEntries.length == 2) {
+            methodNotAllowed(req, res);
+            return;
+        } else if (pathEntries.length == 3) {
             deleteUser(req, res);
+            return;
+        } else if (pathEntries.length == 4 && pathEntries[3] == "anime") {
+            methodNotAllowed(req, res);
             return;
         } else if (pathEntries.length == 5 && pathEntries[3] == "anime") {
             deleteUserAnimeListEntry(req, res);
