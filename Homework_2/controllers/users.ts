@@ -2,7 +2,6 @@ import {IncomingMessage, ServerResponse} from "http";
 import {User} from "../entity/user.dto";
 import {StatusCodes} from "http-status-codes";
 import {getRequestBody} from "../util/request-data";
-import {AnimeEntry} from "../entity/anime-entry.dto";
 
 
 export async function createUser(req: IncomingMessage, res: ServerResponse) {
@@ -30,6 +29,46 @@ export async function createUser(req: IncomingMessage, res: ServerResponse) {
     res.end(JSON.stringify({
         message: "Parameters required were not provided."
     }));
+}
+
+export async function createSpecificUser(req: IncomingMessage, res: ServerResponse) {
+    let body = await getRequestBody(req);
+    if (!Number.isInteger(Number(req.url?.split("/")[2]))) {
+        res.writeHead(StatusCodes.BAD_REQUEST, {
+            "Content-Type": "application/json"
+        });
+        res.end(JSON.stringify({
+            message: "Invalid user id."
+        }));
+        return;
+    }
+    if (!body.name) {
+        res.writeHead(StatusCodes.BAD_REQUEST, {
+            "Content-Type": "application/json"
+        });
+        res.end(JSON.stringify({
+            message: "Parameters required were not provided."
+        }));
+        return;
+    }
+    let user = await User.findOne(req.url?.split("/")[2]);
+    if (user) {
+        res.writeHead(StatusCodes.CONFLICT, {
+            "Content-Type": "application/json"
+        });
+        res.end(JSON.stringify({
+            message: "User already exists."
+        }));
+        return;
+    }
+    user = new User();
+    user.id = Number(req.url?.split("/")[2]);
+    user.name = body.name;
+    await user.save();
+    res.writeHead(StatusCodes.CREATED, {
+        "Content-Type": "application/json"
+    });
+    res.end(JSON.stringify(user));
 }
 
 export async function getAllUsers(req: IncomingMessage, res: ServerResponse) {

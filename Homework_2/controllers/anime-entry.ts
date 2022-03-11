@@ -11,10 +11,26 @@ export async function addAnimeToUserList(req: IncomingMessage, res: ServerRespon
     if (user) {
         let theAnime = await Anime.findOne(body.id);
         if (theAnime) {
+            let entry = await AnimeEntry.findOne({
+                where: {
+                    user,
+                    anime: theAnime
+                }
+            });
+            if(entry){
+                res.writeHead(StatusCodes.CONFLICT, {
+                    "Content-Type": "application/json"
+                });
+                res.end(JSON.stringify({
+                    message: "User already has anime in list."
+                }));
+                return;
+            }
             let newEntry = new AnimeEntry();
             newEntry.anime = theAnime;
             newEntry.user = user;
             newEntry.status = body.status || "Plan to watch";
+            newEntry.episodesWatched = body.episodesWatched || 0;
             await newEntry.save();
             if (newEntry) {
                 res.writeHead(StatusCodes.CREATED, {
@@ -44,6 +60,75 @@ export async function addAnimeToUserList(req: IncomingMessage, res: ServerRespon
     });
     res.end(JSON.stringify({
         message: "Bad user id."
+    }));
+}
+
+export async function addSpecificAnimeToUserList(req: IncomingMessage, res: ServerResponse) {
+    let body = await getRequestBody(req);
+    let newEntry = await AnimeEntry.findOne(req.url?.split("/")[4]);
+    if(!Number.isInteger(Number(req.url?.split("/")[4]))){
+        res.writeHead(StatusCodes.BAD_REQUEST, {
+            "Content-Type": "application/json"
+        });
+        res.end(JSON.stringify({
+            message: "Invalid anime entry id."
+        }));
+        return;
+    }
+    if(newEntry){
+        res.writeHead(StatusCodes.CONFLICT, {
+            "Content-Type": "application/json"
+        });
+        res.end(JSON.stringify({
+            message: "Anime entry already exists."
+        }));
+        return;
+    }
+    let user = await User.findOne(req.url?.split("/")[2]);
+    if(user){
+        let anime = await Anime.findOne(body.id);
+        if(anime){
+            let entry = await AnimeEntry.findOne({
+                where: {
+                    user,
+                    anime
+                }
+            });
+            if(entry){
+                res.writeHead(StatusCodes.CONFLICT, {
+                    "Content-Type": "application/json"
+                });
+                res.end(JSON.stringify({
+                    message: "User already has anime in list."
+                }));
+                return;
+            }
+            newEntry = new AnimeEntry();
+            newEntry.user = user;
+            newEntry.anime = anime;
+            newEntry.id = Number(req.url?.split("/")[4]);
+            newEntry.status = body.status || "Plan to watch";
+            newEntry.episodesWatched = body.episodesWatched || 0;
+            await newEntry.save();
+            res.writeHead(StatusCodes.CREATED, {
+                "Content-Type": "application/json"
+            });
+            res.end(JSON.stringify(newEntry));
+            return;
+        }
+        res.writeHead(StatusCodes.BAD_REQUEST, {
+            "Content-Type": "application/json"
+        });
+        res.end(JSON.stringify({
+            message: "Invalid anime id."
+        }));
+        return;
+    }
+    res.writeHead(StatusCodes.BAD_REQUEST, {
+        "Content-Type": "application/json"
+    });
+    res.end(JSON.stringify({
+        message: "Invalid user id."
     }));
 }
 
