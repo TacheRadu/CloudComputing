@@ -17,7 +17,7 @@ export async function addAnimeToUserList(req: IncomingMessage, res: ServerRespon
                     anime: theAnime
                 }
             });
-            if(entry){
+            if (entry) {
                 res.writeHead(StatusCodes.CONFLICT, {
                     "Content-Type": "application/json"
                 });
@@ -66,7 +66,7 @@ export async function addAnimeToUserList(req: IncomingMessage, res: ServerRespon
 export async function addSpecificAnimeToUserList(req: IncomingMessage, res: ServerResponse) {
     let body = await getRequestBody(req);
     let newEntry = await AnimeEntry.findOne(req.url?.split("/")[4]);
-    if(!Number.isInteger(Number(req.url?.split("/")[4]))){
+    if (!Number.isInteger(Number(req.url?.split("/")[4]))) {
         res.writeHead(StatusCodes.BAD_REQUEST, {
             "Content-Type": "application/json"
         });
@@ -75,7 +75,7 @@ export async function addSpecificAnimeToUserList(req: IncomingMessage, res: Serv
         }));
         return;
     }
-    if(newEntry){
+    if (newEntry) {
         res.writeHead(StatusCodes.CONFLICT, {
             "Content-Type": "application/json"
         });
@@ -85,16 +85,16 @@ export async function addSpecificAnimeToUserList(req: IncomingMessage, res: Serv
         return;
     }
     let user = await User.findOne(req.url?.split("/")[2]);
-    if(user){
+    if (user) {
         let anime = await Anime.findOne(body.id);
-        if(anime){
+        if (anime) {
             let entry = await AnimeEntry.findOne({
                 where: {
                     user,
                     anime
                 }
             });
-            if(entry){
+            if (entry) {
                 res.writeHead(StatusCodes.CONFLICT, {
                     "Content-Type": "application/json"
                 });
