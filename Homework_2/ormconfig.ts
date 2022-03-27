@@ -1,4 +1,4 @@
-{
+export default {
   "type": "mysql",
   "host": "localhost",
   "port": 3306,
@@ -8,6 +8,6 @@
   "synchronize": true,
   "logging": true,
   "entities": [
-    "entity/**/*.ts"
+    "entity/**/*.dto{.ts,.js}"
   ]
 }
